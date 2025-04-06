@@ -5,7 +5,7 @@
 #include <string>
 using namespace std;
 
-// Validation helpers
+// Validation for inputs
 bool isValidName(const string& name) {
     if (name.empty()) return false;
     for (char ch : name) 
@@ -32,7 +32,6 @@ bool isFloat(const string& str) {
     return true;
 }
 
-// String formatting
 string capitalize(string input) {
     if (!input.empty()) {
         input[0] = toupper(input[0]);
@@ -46,7 +45,6 @@ string fixedWidth(const string& str, int width) {
     return (str.length() > width) ? str.substr(0, width-3) + "..." : str + string(width-str.length(), ' ');
 }
 
-// Input helpers
 void clearBuffer() { cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
 
 int stringToInt(const string& str) {
@@ -89,7 +87,7 @@ int getIntInput(const string& prompt, int min = INT_MIN, int max = INT_MAX) {
         if (value < min) cout << "Error: Value must be at least " << min << endl;
         else if (value > max) cout << "Error: Value must be at most " << max << endl;
         else break;
-    }
+    } // ito yung min and max na value
     return value;
 }
 
@@ -100,7 +98,7 @@ float getFloatInput(const string& prompt, float min = 0.0f) {
         value = stringToFloat(input);
         if (value < min) cout << "Error: Value must be at least " << min << endl;
         else break;
-    }
+    } // ito naman ay yung sasabihin if hindi pasok dun sa min na value
     return value;
 }
 
@@ -130,14 +128,14 @@ public:
              << "ID:       " << productID << "\nName:     " << name
              << "\nQuantity: " << quantity << "\nPrice:    " << price
              << "\nCategory: " << category << "\n---------------------------------\n";
-    }
+    } // ito yung display
     
     void displayRow() const {
         cout << "| " << fixedWidth(to_string(productID), 6) << " | "
              << fixedWidth(name, 20) << " | " << fixedWidth(to_string(quantity), 8) << " | "
              << fixedWidth("₱" + to_string(price), 10) << " | " << fixedWidth(category, 15) << " |\n";
     }
-};
+}; 
 
 class Inventory {
     vector<Product> products;
@@ -148,7 +146,7 @@ public:
     Product* findProduct(int id) {
         for (auto& p : products) if (p.getID() == id) return &p;
         return nullptr;
-    }
+    } //ito naman ay yung hahanapin ang product by ID
     
     bool removeProduct(int id) {
         for (size_t i = 0; i < products.size(); i++)
@@ -157,7 +155,7 @@ public:
                 return true;
             }
         return false;
-    }
+    } // ito naman ay yung remove product by ID
     
     const vector<Product>& getAllProducts() const { return products; }
     
@@ -165,7 +163,7 @@ public:
         vector<Product> lowStock;
         for (const auto& p : products) if (p.getQuantity() <= 5) lowStock.push_back(p);
         return lowStock;
-    }
+    } // ito naman ay ichcheck yung low stock if its <= lower than 5
     
     void sortByQuantity(bool ascending = true) {
         for (size_t i = 0; i < products.size(); i++)
@@ -173,7 +171,7 @@ public:
                 if ((ascending && products[i].getQuantity() > products[j].getQuantity()) ||
                    (!ascending && products[i].getQuantity() < products[j].getQuantity()))
                     swap(products[i], products[j]);
-    }
+    } // ito naman ay yung sort by quantity if ascending or descending
     
     void sortByPrice(bool ascending = true) {
         for (size_t i = 0; i < products.size(); i++)
@@ -181,14 +179,14 @@ public:
                 if ((ascending && products[i].getPrice() > products[j].getPrice()) ||
                    (!ascending && products[i].getPrice() < products[j].getPrice()))
                     swap(products[i], products[j]);
-    }
+    } // ito naman ay yung sort by price if ascending or descending
     
     int getNextID() { return nextID++; }
-    bool isEmpty() const { return products.empty(); }
+    bool isEmpty() const { return products.empty(); } // ito naman ay yung next ID like 1 then sunod ay 2 na yung id
     
     void displayAll() const {
         if (products.empty()) {
-            cout << "No products in inventory.\n";
+            cout << "No products in inventory.\n"; // ito ang lalabas if na determine na walang product na avail
             return;
         }
         cout << "Inventory List (" << products.size() << " items):\n"
@@ -197,12 +195,12 @@ public:
              << "---------------------------------------------------------------------------\n";
         for (const auto& p : products) p.displayRow();
         cout << "---------------------------------------------------------------------------\n";
-    }
+    } // display format kung meron nasa inventory
     
     void displayLowStock() const {
         auto lowStock = getLowStockProducts();
         if (lowStock.empty()) {
-            cout << "No low stock products (No quantity <= 5).\n";
+            cout << "No low stock products (No quantity lower or equal to 5).\n"; // ito lalabas if na walang low stock na <= to 5
             return;
         }
         cout << "\nLow Stock Products (" << lowStock.size() << " items):\n"
@@ -211,7 +209,7 @@ public:
              << "---------------------------------------------------------------------------\n";
         for (const auto& p : lowStock) p.displayRow();
         cout << "---------------------------------------------------------------------------\n";
-    }
+    } // display format kung merong low stock na product
 };
 
 // Menu functions
@@ -235,19 +233,19 @@ void updateProductMenu(Inventory& inventory) {
     if (inventory.isEmpty()) {
         cout << "Inventory is empty. No products to update.\n";
         return;
-    }
+    } // ito lalabas if walang available product an pwedeng i update
     cout << "\n------------------------------------------\n";
     int id = getIntInput("Enter product ID to update: ", 1);
     Product* product = inventory.findProduct(id);
     if (!product) {
         cout << "Item not found!\n";
-        return;
+        return; // ito naman ay kung nag lagay na ID na wala sa system
     }
     
     cout << "\nCurrent product details:\n";
     product->display();
     cout << "\n1. Quantity\n2. Price\n3. Cancel\n";
-    int choice = getIntInput("Enter your choice: ", 1, 3);
+    int choice = getIntInput("Enter your choice: ", 1, 3); // dito naman kuung anong pipiliin sa gusto nilang iupdate
     
     if (choice == 1) {
         int oldQty = product->getQuantity();
@@ -259,12 +257,12 @@ void updateProductMenu(Inventory& inventory) {
         product->setPrice(getFloatInput("Enter new price: P", 0.0f));
         cout << "\nPrice of Item " << product->getName() << " updated from ₱" 
              << oldPrice << " to ₱" << product->getPrice() << endl;
-    }
+    } // here naman ay yung naka pili na then i rereplace na yung quantity or price
 }
 
 void removeProductMenu(Inventory& inventory) {
     if (inventory.isEmpty()) {
-        cout << "\n------------------------------------------\nInventory is empty.\n";
+        cout << "\n------------------------------------------\nInventory is empty.\n"; // lalabas if the invetory ay empty 
         return;
     }
     cout << "\n------------------------------------------\n";
@@ -273,7 +271,7 @@ void removeProductMenu(Inventory& inventory) {
     if (!product) {
         cout << "Item not found!\n";
         return;
-    }
+    } // enter ID then walang nahanap na product with the ID
     cout << "\nProduct to be removed:\n";
     product->display();
     if (getStringInput("Confirm removal? (y/n): ") == "y") {
@@ -281,7 +279,7 @@ void removeProductMenu(Inventory& inventory) {
         cout << "Item removed successfully!\n";
     } else {
         cout << "Removal cancelled.\n";
-    }
+    } // confirm if yung gusto nilang iremove or cancel
 }
 
 void displayMainMenu() {
@@ -289,7 +287,7 @@ void displayMainMenu() {
          << "1. Add Item\n2. Update Item\n3. Remove Item\n4. Display All Items\n"
          << "5. Search Item\n6. Sort Items\n7. Display Low Stock Items\n8. Exit\n"
          << "\n---------------------\n";
-}
+} // ui for the main menu 
 
 int main() {
     Inventory inventory;
@@ -312,7 +310,7 @@ int main() {
                     cout << "\nProduct found:\n";
                     product->display();
                 } else cout << "Item not found!\n";
-                break;
+                break; // ito naman ay yung search productID ang lalabas ay product found otherwise item not found ang lalabas
             }
             case 6: {
                 if (inventory.isEmpty()) {
@@ -327,10 +325,10 @@ int main() {
                 (sortChoice == 1) ? inventory.sortByQuantity(ascending) : inventory.sortByPrice(ascending);
                 cout << "Products sorted (" << (ascending ? "ascending" : "descending") << " order)\n";
                 inventory.displayAll();
-                break;
+                break; // itong part naman ay yung sort by quantity or price at kung ascending or descending
             }
-            case 7: inventory.displayLowStock(); break;
-            case 8: cout << "Exiting program\n"; return 0;
+            case 7: inventory.displayLowStock(); break; // dito naman ay mag didisplay yung low stock
+            case 8: cout << "Exiting program\n"; return 0; //exit
         }
     }
 }
